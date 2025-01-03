@@ -70,19 +70,26 @@ class Dot:
                 other.y += math.sin(collision_angle) * overlap / 2
 
     def avoid_obstacle(self):
-        # Check if the dot is too close to the obstacle
+        # Obstacle parameters
         obstacle_center = (WIDTH // 2, HEIGHT // 2)
         obstacle_radius = 100
         dist = math.hypot(self.x - obstacle_center[0], self.y - obstacle_center[1])
 
         if dist < obstacle_radius + self.size:
-            # Adjust direction to move away from the obstacle
-            angle_to_obstacle = math.atan2(obstacle_center[1] - self.y, obstacle_center[0] - self.x)
-            self.x -= math.cos(angle_to_obstacle) * self.speed
-            self.y -= math.sin(angle_to_obstacle) * self.speed
-            self.angle += random.uniform(-0.2, 0.2)  # Slightly adjust the angle to avoid getting stuck
+            # Calculate the vector away from the obstacle center
+            angle_away_from_obstacle = math.atan2(self.y - obstacle_center[1], self.x - obstacle_center[0])
+
+            # Move the dot away from the obstacle
+            self.x += math.cos(angle_away_from_obstacle) * self.speed
+            self.y += math.sin(angle_away_from_obstacle) * self.speed
+
+            # Slightly adjust the direction angle to ensure it avoids the obstacle
+            self.angle = angle_away_from_obstacle
         else:
+            # Recalculate angle toward target if not near obstacle
             self.angle = math.atan2(self.target_y - self.y, self.target_x - self.x)
+
+
 
 # Create two teams of dots with start and target points
 def create_team(count, color, start_x, start_y, target_x, target_y):
