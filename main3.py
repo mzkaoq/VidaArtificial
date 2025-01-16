@@ -5,21 +5,53 @@ import math
 # Initialize pygame
 pygame.init()
 
+
 # Screen dimensions
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 1700, 1000
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Collision Game with Obstacles")
+#20px = 1m 
 
 # Colors
 WHITE = (255, 255, 255)
+BLACK = (0,0,0)
 TEAM_RED = (255, 0, 0)
 TEAM_BLUE = (0, 0, 255)
 START_COLOR = (0, 255, 0)
 FINISH_COLOR = (255, 255, 0)
 OBSTACLE_COLOR = (100, 100, 100)
+SPEED = 15
+
 
 # Clock for controlling frame rate
 clock = pygame.time.Clock()
+
+dt = clock.tick(60) / 1000.0
+obstacles = [pygame.Rect(WIDTH//2 - 50 , HEIGHT//2 - 100, 50, 200), pygame.Rect(WIDTH//2 - 120, HEIGHT//2 - 20, 250, 20)]
+
+def create_obstacle_grid(obstacles, width, height):
+    grid = [[0] * width for _ in range(height)]
+
+    for rect in obstacles:
+        for x in range(rect.left, rect.right):
+            for y in range(rect.top, rect.bottom):
+                grid[y][x] = 1
+
+    return grid
+
+obstacle_grid = create_obstacle_grid(obstacles, WIDTH, HEIGHT)
+
+
+def count_ones_2d(map):
+  count = 0
+  for row in map:
+    for cell in row:
+      if cell == 1:
+        count += 1
+  return count
+
+print(count_ones_2d(obstacle_grid))
+
 
 class Dot:
     def __init__(self, x, y, target_x, target_y, speed, size, color):
@@ -31,20 +63,34 @@ class Dot:
         self.size = size
         self.color = color
         self.angle = math.atan2(target_y - y, target_x - x)  # Angle toward target
+        self.actual_angle = self.angle
         self.reached = False
 
     def move(self):
         # Move towards the target point if not reached
         if not self.reached:
-            self.x += self.speed * math.cos(self.angle)
-            self.y += self.speed * math.sin(self.angle)
+            # Predict next position
+            next_x = self.x + self.speed * math.cos(self.angle) * dt
+            next_y = self.y + self.speed * math.sin(self.angle) * dt
+
+            # Create a rect for the next position to check for collision
+            next_rect = pygame.Rect(next_x, next_y, self.size, self.size)
+            
+            # Check for obstacles
+            for obstacle in obstacles:
+                if next_rect.colliderect(obstacle):
+                    self.avoid_obstacle(obstacle)
+                # else:
+                #      self.angle = math.atan2(self.target_y - self.y, self.target_x - self.x)
+
+            # No collision detected, move towards target
+            self.x = next_x
+            self.y = next_y
 
             # Check if the dot has reached its target
             if math.hypot(self.x - self.target_x, self.y - self.target_y) < self.size * 2:
                 self.reached = True
 
-            # Avoid obstacle
-            self.avoid_obstacle()
 
     def draw(self, screen):
         # Draw the dot if it hasn't reached its target
@@ -69,25 +115,13 @@ class Dot:
                 other.x += math.cos(collision_angle) * overlap / 2
                 other.y += math.sin(collision_angle) * overlap / 2
 
-    def avoid_obstacle(self):
-        # Obstacle parameters
-        obstacle_center = (WIDTH // 2, HEIGHT // 2)
-        obstacle_radius = 100
-        dist = math.hypot(self.x - obstacle_center[0], self.y - obstacle_center[1])
-
-        if dist < obstacle_radius + self.size:
-            # Calculate the vector away from the obstacle center
-            angle_away_from_obstacle = math.atan2(self.y - obstacle_center[1], self.x - obstacle_center[0])
-
-            # Move the dot away from the obstacle
-            self.x += math.cos(angle_away_from_obstacle) * self.speed
-            self.y += math.sin(angle_away_from_obstacle) * self.speed
-
-            # Slightly adjust the direction angle to ensure it avoids the obstacle
-            self.angle = angle_away_from_obstacle
-        else:
-            # Recalculate angle toward target if not near obstacle
-            self.angle = math.atan2(self.target_y - self.y, self.target_x - self.x)
+    def avoid_obstacle(self, obstacle):
+        # Here, we can either move the dot around the obstacle
+        # or simply stop the movement. This example stops the dot.
+       
+        self.angle = math.atan2(0,0)
+      
+  
 
 
 
@@ -95,16 +129,17 @@ class Dot:
 def create_team(count, color, start_x, start_y, target_x, target_y):
     team = []
     for _ in range(count):
-        speed = random.uniform(2, 4)
-        size = 15
-        team.append(Dot(start_x, start_y, target_x, target_y, speed, size, color))
+        #speed = 1.4 * 20 #speed - 1.4 m/s = 1.4 * 20px 
+        speed = SPEED * 20 #speed - 1.4 m/s = 1.4 * 20px 
+        size = 10 # diameter of 20px -> 1m 
+        team.append(Dot(start_x - random.randrange(10), start_y-random.randrange(10), target_x, target_y, speed, size, color))
     return team
 
 # Red team: start from bottom-left, target top-right
-team_red = create_team(10, TEAM_RED, 100, HEIGHT - 100, WIDTH - 100, 100)
+team_red = create_team(30, TEAM_RED, 300, HEIGHT - 300, WIDTH - 300, 300)
 
 # Blue team: start from top-right, target bottom-left
-team_blue = create_team(10, TEAM_BLUE, WIDTH - 100, 100, 100, HEIGHT - 100)
+team_blue = create_team(20, TEAM_BLUE, WIDTH - 300, 300, 300, HEIGHT - 300)
 
 # Combine all dots for processing
 all_dots = team_red + team_blue
@@ -120,8 +155,11 @@ while running:
     pygame.draw.rect(screen, START_COLOR, (WIDTH - 120, 80, 40, 40))  # Blue start
     pygame.draw.rect(screen, FINISH_COLOR, (80, HEIGHT - 120, 40, 40))  # Blue finish
 
+    pygame.draw.line(screen, BLACK, (50, 150), (100, 150), 1)
+
     # Draw obstacle in the center
-    pygame.draw.circle(screen, OBSTACLE_COLOR, (WIDTH // 2, HEIGHT // 2), 100)
+    for obstacle in obstacles:
+        pygame.draw.rect(screen, (0, 0, 0), obstacle)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
