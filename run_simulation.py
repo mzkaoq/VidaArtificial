@@ -2,8 +2,8 @@ from trafficSimulator import *
 
 sim = Simulation()
 
-lane_space = 10
-intersection_size = 100
+lane_space = 2
+intersection_size = 1
 length = 100
 
 # SOUTH, EAST, NORTH, WEST
@@ -23,16 +23,16 @@ sim.create_segment((lane_space/2, intersection_size/2), (lane_space/2, -intersec
 sim.create_segment((intersection_size/2, -lane_space/2), (-intersection_size/2, -lane_space/2))
 sim.create_segment((-lane_space/2, -intersection_size/2), (-lane_space/2, intersection_size/2))
 sim.create_segment((-intersection_size/2, lane_space/2), (intersection_size/2, lane_space/2))
-# Right turn
-sim.create_quadratic_bezier_curve((lane_space/2, intersection_size/2), (lane_space/2, lane_space/2), (intersection_size/2, lane_space/2))
-sim.create_quadratic_bezier_curve((intersection_size/2, -lane_space/2), (lane_space/2, -lane_space/2), (lane_space/2, -intersection_size/2))
-sim.create_quadratic_bezier_curve((-lane_space/2, -intersection_size/2), (-lane_space/2, -lane_space/2), (-intersection_size/2, -lane_space/2))
-sim.create_quadratic_bezier_curve((-intersection_size/2, lane_space/2), (-lane_space/2, lane_space/2), (-lane_space/2, intersection_size/2))
-# Left turn
-sim.create_quadratic_bezier_curve((lane_space/2, intersection_size/2), (lane_space/2, -lane_space/2), (-intersection_size/2, -lane_space/2))
-sim.create_quadratic_bezier_curve((intersection_size/2, -lane_space/2), (-lane_space/2, -lane_space/2), (-lane_space/2, intersection_size/2))
-sim.create_quadratic_bezier_curve((-lane_space/2, -intersection_size/2), (-lane_space/2, lane_space/2), (intersection_size/2, lane_space/2))
-sim.create_quadratic_bezier_curve((-intersection_size/2, lane_space/2), (lane_space/2, lane_space/2), (lane_space/2, -intersection_size/2))
+# # Right turn
+# sim.create_quadratic_bezier_curve((lane_space/2, intersection_size/2), (lane_space/2, lane_space/2), (intersection_size/2, lane_space/2))
+# sim.create_quadratic_bezier_curve((intersection_size/2, -lane_space/2), (lane_space/2, -lane_space/2), (lane_space/2, -intersection_size/2))
+# sim.create_quadratic_bezier_curve((-lane_space/2, -intersection_size/2), (-lane_space/2, -lane_space/2), (-intersection_size/2, -lane_space/2))
+# sim.create_quadratic_bezier_curve((-intersection_size/2, lane_space/2), (-lane_space/2, lane_space/2), (-lane_space/2, intersection_size/2))
+# # Left turn
+# sim.create_quadratic_bezier_curve((lane_space/2, intersection_size/2), (lane_space/2, -lane_space/2), (-intersection_size/2, -lane_space/2))
+# sim.create_quadratic_bezier_curve((intersection_size/2, -lane_space/2), (-lane_space/2, -lane_space/2), (-lane_space/2, intersection_size/2))
+# sim.create_quadratic_bezier_curve((-lane_space/2, -intersection_size/2), (-lane_space/2, lane_space/2), (intersection_size/2, lane_space/2))
+# sim.create_quadratic_bezier_curve((-intersection_size/2, lane_space/2), (lane_space/2, lane_space/2), (lane_space/2, -intersection_size/2))
 
 vg = VehicleGenerator({
     'vehicles': [
@@ -44,15 +44,15 @@ sim.add_vehicle_generator(vg)
 
 
 
-v = Vehicle({'path': [0], 'x': 20, 'v':10.6})
-sim.add_vehicle(v)
+# v = Vehicle({'path': [0], 'x': 20, 'v':10.6})
+# sim.add_vehicle(v)
 
-v = Vehicle({'path': [0], 'x': 40, 'v':5.6})
-sim.add_vehicle(v)
+# v = Vehicle({'path': [0], 'x': 40, 'v':5.6})
+# sim.add_vehicle(v)
 
 
-v = Vehicle({'path': [0]})
-sim.add_vehicle(v)
+# v = Vehicle({'path': [0], 'x': 0, 'v':5.6})
+# sim.add_vehicle(v)
 
 win = Window(sim)
 win.run()
