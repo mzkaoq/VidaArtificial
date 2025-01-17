@@ -68,7 +68,7 @@ class Simulation:
             # If not
             vehicle = road.vehicles[0]
             # If first vehicle is out of road bounds
-            if vehicle.x >= road.length + vehicle.l:
+            if vehicle.x >= road.length:
                 # If vehicle has a next road
                 if vehicle.current_road_index + 1 < len(vehicle.path):
                     # Update current road to next road
