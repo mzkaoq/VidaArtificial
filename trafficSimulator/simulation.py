@@ -68,7 +68,7 @@ class Simulation:
             # If not
             vehicle = road.vehicles[0]
             # If first vehicle is out of road bounds
-            if vehicle.x >= road.length:
+            if vehicle.x >= road.length + vehicle.l:
                 # If vehicle has a next road
                 if vehicle.current_road_index + 1 < len(vehicle.path):
                     # Update current road to next road
@@ -77,8 +77,13 @@ class Simulation:
                     new_vehicle = deepcopy(vehicle)
                     new_vehicle.x = 0
                     # Add it to the next road
+                    #TODO: add only if there is a space 
                     next_road_index = vehicle.path[vehicle.current_road_index]
-                    self.roads[next_road_index].vehicles.append(new_vehicle)
+                    if len(self.roads[next_road_index].vehicles) != 0:
+                        if self.roads[next_road_index].vehicles[-1].x >= self.roads[next_road_index].vehicles[-1].l:
+                            self.roads[next_road_index].vehicles.append(new_vehicle)
+                    else:
+                        self.roads[next_road_index].vehicles.append(new_vehicle)
                 else:
                     self.cars_finished += 1
                 # In all cases, remove it from its road
