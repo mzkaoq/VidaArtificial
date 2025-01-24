@@ -33,6 +33,7 @@ class VehicleGenerator:
         for (weight, config) in self.vehicles:
             r -= weight
             if r <= 0:
+                config["sim_time"] = self.sim.t
                 return Vehicle(config)
 
     def update(self):

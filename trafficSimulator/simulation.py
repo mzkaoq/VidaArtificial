@@ -1,7 +1,6 @@
 from .road import Road
 from copy import deepcopy
 from .vehicle_generator import VehicleGenerator
-from .traffic_signal import TrafficSignal
 import random
 
 class Simulation:
@@ -22,7 +21,8 @@ class Simulation:
         self.dt = 1/60          # Simulation time step
         self.roads = []         # Array to store roads
         self.generators = []
-        self.traffic_signals = []
+        self.total_time = 0.0
+        self.avg_time = 0.0
 
     def update_number_of_vechicles(self):
         self.cars_started += 1
@@ -40,15 +40,9 @@ class Simulation:
         self.cars_started += 1
 
     def create_gen(self, config={}):
-        gen = VehicleGenerator(self, config)
+        gen = VehicleGenerator(self, config, )
         self.generators.append(gen)
         return gen
-
-    def create_signal(self, roads, config={}):
-        roads = [[self.roads[i] for i in road_group] for road_group in roads]
-        sig = TrafficSignal(roads, config)
-        self.traffic_signals.append(sig)
-        return sig
 
     def update(self):
         # Update every road
@@ -59,9 +53,6 @@ class Simulation:
         for gen in self.generators:
             gen.update()
         
-        for signal in self.traffic_signals:
-            signal.update(self)
-
         # Check roads for out of bounds vehicle
         for road in self.roads:
             # If road has no vehicles, continue
@@ -93,6 +84,7 @@ class Simulation:
                         self.roads[next_road_index].vehicles.append(new_vehicle)
                 else:
                     self.cars_finished += 1
+                    self.total_time += self.t - vehicle.sim_time
                 # In all cases, remove it from its road
                 road.vehicles.popleft() 
             elif vehicle.x > road.length - vehicle.l :
@@ -101,11 +93,19 @@ class Simulation:
                     vehicle.stop()
                 vehicle.unslow()
             elif vehicle.x > road.length - 3 * vehicle.l:
-                vehicle.slow(vehicle.v_max * 0.7)
+                next_road_index = vehicle.path[vehicle.current_road_index]
+                if len(self.roads[next_road_index].vehicles) != 0 and self.roads[next_road_index].vehicles[-1].x < 3 * self.roads[next_road_index].vehicles[-1].l:
+                    vehicle.slow(vehicle.v_max * 0.7)
         # Increment time
         self.t += self.dt
         self.frame_count += 1
         self.cars_live = self.cars_started - self.cars_finished
+        if self.cars_finished == 0:
+            self.avg_time = 0.0
+        else:    
+            self.avg_time =  self.total_time / self.cars_finished
+
+
 
 
     def run(self, steps):

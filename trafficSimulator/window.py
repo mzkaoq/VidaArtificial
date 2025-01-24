@@ -256,34 +256,7 @@ class Window:
                 color=(180, 180, 220),
                 centered=False
             )
-            # Draw road lines
-            # self.rotated_box(
-            #     road.start,
-            #     (road.length, 0.25),
-            #     cos=road.angle_cos,
-            #     sin=road.angle_sin,
-            #     color=(0, 0, 0),
-            #     centered=False
-            # )
 
-            # Draw road arrow
-            # if road.length > 5: 
-            #     for i in np.arange(-0.5*road.length, 0.5*road.length, 10):
-            #         pos = (
-            #             road.start[0] + (road.length/2 + i + 3) * road.angle_cos,
-            #             road.start[1] + (road.length/2 + i + 3) * road.angle_sin
-            #         )
-
-            #         self.arrow(
-            #             pos,
-            #             (-1.25, 0.2),
-            #             cos=road.angle_cos,
-            #             sin=road.angle_sin
-            #         )   
-            
-
-
-            # TODO: Draw road arrow
 
     def draw_vehicle(self, vehicle, road):
         l, h = vehicle.l,  2
@@ -321,25 +294,22 @@ class Window:
         text_frc = self.text_font.render(f'n={self.sim.frame_count}', False, (0, 0, 0))
         text_vnow = self.text_font.render(f'v_now={self.sim.cars_live}', False, (0, 0, 0))
         text_vended = self.text_font.render(f'v_ended={self.sim.cars_finished}', False, (0, 0, 0))
+        text_average_time = self.text_font.render(f'avg_time={self.sim.avg_time:.3f}', False, (0, 0, 0))
 
         self.screen.blit(text_fps, (0, 0))
         self.screen.blit(text_frc, (100, 0))
         self.screen.blit(text_vnow, (200, 0))
         self.screen.blit(text_vended, (300, 0))
+        self.screen.blit(text_average_time, (450, 0))
 
 
     def draw(self):
         # Fill background
         self.background(*self.bg_color)
 
-        # Major and minor grid and axes
-        # self.draw_grid(10, (220,220,220))
-        # self.draw_grid(100, (200,200,200))
-        # self.draw_axes()
-
         self.draw_roads()
         self.draw_vehicles()
-        self.draw_signals()
+
 
         # Draw status info
         self.draw_status()

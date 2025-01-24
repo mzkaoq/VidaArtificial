@@ -17,9 +17,9 @@ class Vehicle:
         self.l = 4
         self.s0 = 4
         self.T = 1
-        self.v_max = random.uniform(5, 10)
-        self.a_max = 1.44
-        self.b_max = 4.61
+        self.v_max = random.uniform(10, 15)
+        self.a_max = 2
+        self.b_max = 4
 
         self.path = []
         self.current_road_index = 0
