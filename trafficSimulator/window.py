@@ -267,19 +267,19 @@ class Window:
             # )
 
             # Draw road arrow
-            if road.length > 5: 
-                for i in np.arange(-0.5*road.length, 0.5*road.length, 10):
-                    pos = (
-                        road.start[0] + (road.length/2 + i + 3) * road.angle_cos,
-                        road.start[1] + (road.length/2 + i + 3) * road.angle_sin
-                    )
+            # if road.length > 5: 
+            #     for i in np.arange(-0.5*road.length, 0.5*road.length, 10):
+            #         pos = (
+            #             road.start[0] + (road.length/2 + i + 3) * road.angle_cos,
+            #             road.start[1] + (road.length/2 + i + 3) * road.angle_sin
+            #         )
 
-                    self.arrow(
-                        pos,
-                        (-1.25, 0.2),
-                        cos=road.angle_cos,
-                        sin=road.angle_sin
-                    )   
+            #         self.arrow(
+            #             pos,
+            #             (-1.25, 0.2),
+            #             cos=road.angle_cos,
+            #             sin=road.angle_sin
+            #         )   
             
 
 

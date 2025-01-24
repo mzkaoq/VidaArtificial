@@ -2,6 +2,7 @@ from .road import Road
 from copy import deepcopy
 from .vehicle_generator import VehicleGenerator
 from .traffic_signal import TrafficSignal
+import random
 
 class Simulation:
     def __init__(self, config={}):
@@ -57,7 +58,7 @@ class Simulation:
         # Add vehicles
         for gen in self.generators:
             gen.update()
-
+        
         for signal in self.traffic_signals:
             signal.update(self)
 
@@ -65,6 +66,9 @@ class Simulation:
         for road in self.roads:
             # If road has no vehicles, continue
             if len(road.vehicles) == 0: continue
+
+            for i in range(1, len(road.vehicles)):
+                road.vehicles[i].update(road.vehicles[i-1], self.dt)
             # If not
             vehicle = road.vehicles[0]
             # If first vehicle is out of road bounds
@@ -80,14 +84,24 @@ class Simulation:
                     #TODO: add only if there is a space 
                     next_road_index = vehicle.path[vehicle.current_road_index]
                     if len(self.roads[next_road_index].vehicles) != 0:
-                        if self.roads[next_road_index].vehicles[-1].x >= self.roads[next_road_index].vehicles[-1].l:
+                        #print(self.roads[next_road_index].vehicles[-1].x, self.roads[next_road_index].vehicles[-1].l)
+                        if self.roads[next_road_index].vehicles[-1].x > self.roads[next_road_index].vehicles[-1].l:
                             self.roads[next_road_index].vehicles.append(new_vehicle)
+                        else:
+                          vehicle.unstop()
                     else:
                         self.roads[next_road_index].vehicles.append(new_vehicle)
                 else:
                     self.cars_finished += 1
                 # In all cases, remove it from its road
                 road.vehicles.popleft() 
+            elif vehicle.x > road.length - vehicle.l :
+                next_road_index = vehicle.path[vehicle.current_road_index]
+                if len(self.roads[next_road_index].vehicles) != 0 and self.roads[next_road_index].vehicles[-1].x < self.roads[next_road_index].vehicles[-1].l:
+                    vehicle.stop()
+                vehicle.unslow()
+            elif vehicle.x > road.length - 3 * vehicle.l:
+                vehicle.slow(vehicle.v_max * 0.7)
         # Increment time
         self.t += self.dt
         self.frame_count += 1
