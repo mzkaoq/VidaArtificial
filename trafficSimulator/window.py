@@ -32,7 +32,7 @@ class Window:
         """Shows a window visualizing the simulation and runs the loop function."""
         
         # Create a pygame window
-        self.screen = pygame.display.set_mode((self.width, self.height))
+        self.screen = pygame.display.set_mode((self.width/2, self.height/2))
         pygame.display.flip()
 
         # Fixed fps
@@ -159,7 +159,7 @@ class Window:
         if filled:
             gfxdraw.filled_polygon(self.screen, vertices, color)
 
-    def rotated_box(self, pos, size, angle=None, cos=None, sin=None, centered=True, color=(0, 0, 255), filled=True):
+    def rotated_box(self, pos, size, angle=None, cos=None, sin=None, centered=True, color=(0, 0, 0), filled=True):
         """Draws a rectangle center at *pos* with size *size* rotated anti-clockwise by *angle*."""
         x, y = pos
         l, h = size
@@ -209,7 +209,7 @@ class Window:
         )
 
 
-    def draw_axes(self, color=(100, 100, 100)):
+    def draw_axes(self, color=(255, 165, 0)): 
         x_start, y_start = self.inverse_convert(0, 0)
         x_end, y_end = self.inverse_convert(self.width, self.height)
         self.line(
@@ -223,7 +223,7 @@ class Window:
             color
         )
 
-    def draw_grid(self, unit=50, color=(150,150,150)):
+    def draw_grid(self, unit=50, color=(255, 165, 0)):
         x_start, y_start = self.inverse_convert(0, 0)
         x_end, y_end = self.inverse_convert(self.width, self.height)
 
@@ -253,7 +253,7 @@ class Window:
                 (road.length, 3.7),
                 cos=road.angle_cos,
                 sin=road.angle_sin,
-                color=(180, 180, 220),
+                color=(255, 165, 0),
                 centered=False
             )
 
