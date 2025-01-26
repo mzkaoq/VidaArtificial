@@ -22,6 +22,10 @@ class VehicleGenerator:
         ]
         self.last_added_time = 0
 
+
+        self.new_car_index = 0
+        self.cars_list = []
+
     def init_properties(self):
         self.upcoming_vehicle = self.generate_vehicle()
         
@@ -34,6 +38,8 @@ class VehicleGenerator:
             r -= weight
             if r <= 0:
                 config["sim_time"] = self.sim.t
+                config["car_id"] = f"{self.gen_id}_{self.new_car_index}"
+                self.new_car_index += 1
                 return Vehicle(config)
 
     def update(self):
@@ -51,4 +57,6 @@ class VehicleGenerator:
                 #change +1 numbers of vechicles on the map 
                 self.sim.add_car_number_update()
             self.upcoming_vehicle = self.generate_vehicle()
+            print(self.upcoming_vehicle.path)
+           
 

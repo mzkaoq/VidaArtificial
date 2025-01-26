@@ -32,7 +32,7 @@ class Window:
         """Shows a window visualizing the simulation and runs the loop function."""
         
         # Create a pygame window
-        self.screen = pygame.display.set_mode((self.width/2, self.height/2))
+        self.screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.flip()
 
         # Fixed fps
@@ -257,6 +257,13 @@ class Window:
                 centered=False
             )
 
+    def draw_text(self, text, position, size=12, color=(80, 193, 199)):
+        # Create a font object
+        font = pygame.font.SysFont(None, size)
+        # Render the text surface
+        text_surface = font.render(text, True, color)
+        # Draw the text on the screen at the given position
+        self.screen.blit(text_surface, position)
 
     def draw_vehicle(self, vehicle, road):
         l, h = vehicle.l,  2
@@ -267,27 +274,14 @@ class Window:
 
         self.rotated_box((x, y), (l, h), cos=cos, sin=sin, centered=True)
 
+        number_position =  self.convert(x - 1,y - 1)
+        self.draw_text(str(vehicle.car_id), number_position, size=12)
+
     def draw_vehicles(self):
         for road in self.sim.roads:
             # Draw vehicles
             for vehicle in road.vehicles:
                 self.draw_vehicle(vehicle, road)
-
-    def draw_signals(self):
-        for signal in self.sim.traffic_signals:
-            for i in range(len(signal.roads)):
-                color = (0, 255, 0) if signal.current_cycle[i] else (255, 0, 0)
-                for road in signal.roads[i]:
-                    a = 0
-                    position = (
-                        (1-a)*road.end[0] + a*road.start[0],        
-                        (1-a)*road.end[1] + a*road.start[1]
-                    )
-                    self.rotated_box(
-                        position,
-                        (1, 3),
-                        cos=road.angle_cos, sin=road.angle_sin,
-                        color=color)
 
     def draw_status(self):
         text_fps = self.text_font.render(f't={self.sim.t:.5}', False, (0, 0, 0))

@@ -16,6 +16,7 @@ sim.create_roads([
 ])
 
 sim.create_gen({
+    'gen_id': 1,
     'vehicle_rate': 100,
     'vehicles': [
         [1, {"path": [0, 1]}],
@@ -28,5 +29,5 @@ sim.create_gen({
 
 # Start simulation
 win = Window(sim)
-win.offset = (-150, -110)
-win.run(steps_per_update=5)
+win.offset = (-150, -100)
+win.run(steps_per_update=5) 

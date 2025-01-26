@@ -11,6 +11,7 @@ sim.create_roads([
 ])
 
 sim.create_gen({
+    ''
     'vehicle_rate': 50,
     'vehicles': [
         [1, {"path": [0]}]

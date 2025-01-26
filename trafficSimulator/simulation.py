@@ -24,6 +24,8 @@ class Simulation:
         self.total_time = 0.0
         self.avg_time = 0.0
 
+        self.car_list = {}
+
     def update_number_of_vechicles(self):
         self.cars_started += 1
 
@@ -60,10 +62,14 @@ class Simulation:
 
             for i in range(1, len(road.vehicles)):
                 road.vehicles[i].update(road.vehicles[i-1], self.dt)
+
+            #add to list cars every first vechicle on the road    
+            self.car_list[road.vehicles[-1].car_id] = road.vehicles[-1] 
             # If not
             vehicle = road.vehicles[0]
             # If first vehicle is out of road bounds
             if vehicle.x >= road.length:
+                print(self.car_list)
                 # If vehicle has a next road
                 if vehicle.current_road_index + 1 < len(vehicle.path):
                     # Update current road to next road
@@ -73,29 +79,50 @@ class Simulation:
                     new_vehicle.x = 0
                     # Add it to the next road
                     #TODO: add only if there is a space 
+                    print("dupa",vehicle.path, vehicle.current_road_index )
                     next_road_index = vehicle.path[vehicle.current_road_index]
+                    
                     if len(self.roads[next_road_index].vehicles) != 0:
                         #print(self.roads[next_road_index].vehicles[-1].x, self.roads[next_road_index].vehicles[-1].l)
                         if self.roads[next_road_index].vehicles[-1].x > self.roads[next_road_index].vehicles[-1].l:
                             self.roads[next_road_index].vehicles.append(new_vehicle)
+                            self.car_list[vehicle.car_id] = vehicle
+                            self.car_list.pop(vehicle.car_id)
+                            road.vehicles.popleft()
                         else:
                           vehicle.unstop()
                     else:
                         self.roads[next_road_index].vehicles.append(new_vehicle)
+                        self.car_list[vehicle.car_id] = vehicle
+                        self.car_list.pop(vehicle.car_id)
+                        road.vehicles.popleft()
                 else:
                     self.cars_finished += 1
                     self.total_time += self.t - vehicle.sim_time
+                    self.car_list.pop(vehicle.car_id)
+                    road.vehicles.popleft()
                 # In all cases, remove it from its road
-                road.vehicles.popleft() 
-            elif vehicle.x > road.length - vehicle.l :
+                
+               
+            elif vehicle.x > road.length - 1.5 * vehicle.l :
                 next_road_index = vehicle.path[vehicle.current_road_index]
-                if len(self.roads[next_road_index].vehicles) != 0 and self.roads[next_road_index].vehicles[-1].x < self.roads[next_road_index].vehicles[-1].l:
-                    vehicle.stop()
-                vehicle.unslow()
+                if next_road_index < len(vehicle.path) - 2:
+                    if len(self.roads[next_road_index].vehicles) != 0 and self.roads[next_road_index].vehicles[-1].x < self.roads[next_road_index].vehicles[-1].l:
+                        vehicle.stop()
+                        vehicle.unslow()
+                    else: 
+                        vehicle.unslow()
             elif vehicle.x > road.length - 3 * vehicle.l:
+                next_road_index = vehicle.path[vehicle.current_road_index ]
+                if next_road_index < len(vehicle.path) - 2:
+                    if len(self.roads[next_road_index].vehicles) != 0 and self.roads[next_road_index].vehicles[-1].x < 3 * self.roads[next_road_index].vehicles[-1].l:
+                        vehicle.slow(vehicle.v_max * 0.3)
+            elif vehicle.x > road.length - 7 * vehicle.l:
                 next_road_index = vehicle.path[vehicle.current_road_index]
-                if len(self.roads[next_road_index].vehicles) != 0 and self.roads[next_road_index].vehicles[-1].x < 3 * self.roads[next_road_index].vehicles[-1].l:
-                    vehicle.slow(vehicle.v_max * 0.7)
+                if next_road_index < len(vehicle.path) - 2:
+                    if len(self.roads[next_road_index].vehicles) != 0 and self.roads[next_road_index].vehicles[-1].x < 7 * self.roads[next_road_index].vehicles[-1].l:
+                        vehicle.slow(vehicle.v_max * 0.7)
+
         # Increment time
         self.t += self.dt
         self.frame_count += 1
@@ -106,6 +133,7 @@ class Simulation:
             self.avg_time =  self.total_time / self.cars_finished
 
 
+        print(len(self.car_list), self.cars_live)
 
 
     def run(self, steps):
