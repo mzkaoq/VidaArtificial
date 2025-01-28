@@ -57,6 +57,5 @@ class VehicleGenerator:
                 #change +1 numbers of vechicles on the map 
                 self.sim.add_car_number_update()
             self.upcoming_vehicle = self.generate_vehicle()
-            print(self.upcoming_vehicle.path)
            
 

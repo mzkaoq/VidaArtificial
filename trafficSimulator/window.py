@@ -275,7 +275,7 @@ class Window:
         self.rotated_box((x, y), (l, h), cos=cos, sin=sin, centered=True)
 
         number_position =  self.convert(x - 1,y - 1)
-        self.draw_text(str(vehicle.car_id), number_position, size=12)
+        self.draw_text(f'{vehicle.car_id} {vehicle.v_max}', number_position, size=12)
 
     def draw_vehicles(self):
         for road in self.sim.roads:

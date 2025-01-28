@@ -68,9 +68,7 @@ class Simulation:
             # If not
             vehicle = road.vehicles[0]
             # If first vehicle is out of road bounds
-            if vehicle.x >= road.length:
-                print(self.car_list)
-                # If vehicle has a next road
+            if vehicle.x >= road.length:                # If vehicle has a next road
                 if vehicle.current_road_index + 1 < len(vehicle.path):
                     # Update current road to next road
                     vehicle.current_road_index += 1
@@ -79,7 +77,6 @@ class Simulation:
                     new_vehicle.x = 0
                     # Add it to the next road
                     #TODO: add only if there is a space 
-                    print("dupa",vehicle.path, vehicle.current_road_index )
                     next_road_index = vehicle.path[vehicle.current_road_index]
                     
                     if len(self.roads[next_road_index].vehicles) != 0:
@@ -132,8 +129,10 @@ class Simulation:
         else:    
             self.avg_time =  self.total_time / self.cars_finished
 
+        if self.t > 120 and self.t <= 120 + self.dt :
+            print(self.avg_time)
+            
 
-        print(len(self.car_list), self.cars_live)
 
 
     def run(self, steps):
